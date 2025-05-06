@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { FiUsers, FiPackage, FiFileText, FiShoppingCart, FiHome, FiMenu } from "react-icons/fi";
+import { FiUsers, FiPackage, FiFileText, FiShoppingCart, FiHome, FiMenu, FiGift } from "react-icons/fi";
 import CustomerPage, { Customer } from "./Customer/CustomerTable";
 import ProductPage, { Product } from "./Product/ProductTable";
 import PostsPage, { Post } from "./Posts/PostsTable";
@@ -9,6 +9,7 @@ import OrdersPage, { Order } from "./Orders/OrdersTable";
 import Dashboard from "./Dashboard";
 import SideBar from "@/components/SideBar/SideBar";
 import { ArticleOperation, CustomerOperation, OrderOperation, ProductOperation } from "@/lib/main";
+import VouchersPage from "./Voucher/VouchersTable";
 
 const menuItems = [
     { name: "Dashboard", icon: FiHome },
@@ -16,6 +17,7 @@ const menuItems = [
     { name: "Products", icon: FiPackage },
     { name: "Orders", icon: FiShoppingCart },
     { name: "Posts", icon: FiFileText },
+    { name: "Vouchers", icon: FiGift}
 ];
 export type TabName = (typeof menuItems)[number]["name"];
 
@@ -140,6 +142,9 @@ export default function AdminLayout() {
                     }
                     {
                         selected === 'Dashboard' && <Dashboard customers={customers} orders={orders} posts={posts} products={products} onChangeTab={onChangeTab} />
+                    }
+                    {
+                        selected === 'Vouchers' && <VouchersPage/>
                     }
                 </div>
             </main>

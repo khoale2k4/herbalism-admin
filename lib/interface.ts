@@ -27,3 +27,9 @@ type SizeStock = {
     stock: number;
     price: number;
 }
+
+export type CreateVoucherDto = {
+    id: string;
+    type: 'amount' | 'percent';
+    discount: number;
+}

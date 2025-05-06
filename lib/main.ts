@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { CreateProductDto } from "./interface";
+import { CreateProductDto, CreateVoucherDto } from "./interface";
 
 const token = process.env.NEXT_PUBLIC_TOKEN;
 
@@ -373,6 +373,102 @@ export class OrderOperation {
         try {
             const response = await fetch(this.baseUrl + '/getAll', {
                 method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: "Bearer " + token
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Get article failed with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            return {
+                success: true,
+                message: result.message,
+                data: result.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error,
+                data: null
+            };
+        }
+    }
+}
+
+export class VoucherOperation {
+    private baseUrl: string;
+
+    constructor() {
+        this.baseUrl = (process.env.NEXT_PUBLIC_API_HOST || "http://localhost:3000") + '/voucher';
+    }
+
+    async getAll() {
+        try {
+            const response = await fetch(this.baseUrl + '/all', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: "Bearer " + token
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Get article failed with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            return {
+                success: true,
+                message: result.message,
+                data: result.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error,
+                data: null
+            };
+        }
+    }
+
+    async create(dto: CreateVoucherDto) {
+        try {
+            const response = await fetch(this.baseUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: "Bearer " + token
+                },
+                body: JSON.stringify(dto),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Get article failed with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            return {
+                success: true,
+                message: result.message,
+                data: result.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error,
+                data: null
+            };
+        }
+    }
+
+    async delete(id: string) {
+        try {
+            const response = await fetch(this.baseUrl + '/' + id, {
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: "Bearer " + token
