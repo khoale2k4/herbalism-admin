@@ -33,3 +33,9 @@ export type CreateVoucherDto = {
     type: 'amount' | 'percent';
     discount: number;
 }
+
+export type SendMailsDto = {
+    mails: string[];
+    subject: string;
+    html: string;
+}

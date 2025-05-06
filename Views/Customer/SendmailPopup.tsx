@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactQuill from 'react-quill-new';
 
 type EmailPopupProps = {
     onClose: () => void;
@@ -17,6 +18,23 @@ const EmailPopup = ({ onClose, onSubmit, initialEmails }: EmailPopupProps) => {
         content?: string;
         general?: string;
     }>({});
+
+    const modules = {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }],
+            ['link'],
+            ['clean']
+        ],
+    };
+
+    const formats = [
+        'header',
+        'bold', 'italic', 'underline', 'strike',
+        'list',
+        'link', 'image'
+    ];
 
     const modalRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -195,13 +213,21 @@ const EmailPopup = ({ onClose, onSubmit, initialEmails }: EmailPopupProps) => {
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Nội dung email
                         </label>
-                        <textarea
+                        {/* <textarea
                             rows={6}
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             className={`block border rounded-md w-full rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all ${errors.content ? 'border-red-300' : 'border-gray-300'
                                 }`}
                             placeholder="Nhập nội dung email..."
+                        /> */}
+                        <ReactQuill
+                            theme="snow"
+                            value={content}
+                            onChange={(e) => setContent(e)}
+                            modules={modules}
+                            formats={formats}
+                            className="h-64 mb-16"
                         />
                         {errors.content && <p className="text-red-500 text-xs mt-1">{errors.content}</p>}
                     </div>

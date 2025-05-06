@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { CreateProductDto, CreateVoucherDto } from "./interface";
+import { CreateProductDto, CreateVoucherDto, SendMailsDto } from "./interface";
 
 const token = process.env.NEXT_PUBLIC_TOKEN;
 
@@ -473,6 +473,45 @@ export class VoucherOperation {
                     'Content-Type': 'application/json',
                     Authorization: "Bearer " + token
                 },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Get article failed with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            return {
+                success: true,
+                message: result.message,
+                data: result.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error,
+                data: null
+            };
+        }
+    }
+}
+
+
+export class MailOperation {
+    private baseUrl: string;
+
+    constructor() {
+        this.baseUrl = (process.env.NEXT_PUBLIC_API_HOST || "http://localhost:3000") + '/mail';
+    }
+
+    async sendMails(dto: SendMailsDto) {
+        try {
+            const response = await fetch(this.baseUrl + '/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: "Bearer " + token
+                },
+                body: JSON.stringify(dto),
             });
 
             if (!response.ok) {

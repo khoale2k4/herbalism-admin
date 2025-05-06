@@ -3,6 +3,7 @@
 import { DataTable } from "@/components/DataTable/DataTable";
 import EmailPopup from "./SendmailPopup";
 import { useState } from "react";
+import { MailOperation } from "@/lib/main";
 
 export type Customer = {
     id: number;
@@ -14,12 +15,15 @@ export type Customer = {
 export default function CustomerPage({ customers }: { customers: Customer[] }) {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [selectedMails, setSelectedMails] = useState<string[]>([]);
+    const mailOp = new MailOperation();
 
-    const handleSendEmail = (emails: string[], subject: string, content: string) => {
-        console.log('Sending email to:', emails);
-        console.log('Subject:', subject);
-        console.log('Content:', content);
-        // Gửi email logic ở đây
+    const handleSendEmail = async (emails: string[], subject: string, content: string) => {
+        const response = await mailOp.sendMails({
+            mails: emails,
+            subject,
+            html: content
+        });
+        setIsPopupOpen(false);
     };
     return (
         <div className="p-4 bg-white rounded-lg shadow">
