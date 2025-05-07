@@ -41,12 +41,14 @@ export default function AdminLayout() {
         setSelected(tab);
     };
     const fetchPosts = async () => {
+        setPosts([]);
         const response = await articleOp.getAll();
         if (response.success) {
             setPosts(response.data);
         }
     }
     const fetchProducts = async () => {
+        setProducts([]);
         const response = await productOp.getAll();
         if (response.success) {
             const products = response.data;
@@ -65,6 +67,7 @@ export default function AdminLayout() {
     }
 
     const fetchCustomers = async () => {
+        setCustomers([]);
         const response = await customerOp.getAll();
         if (response.success) {
             setCustomers(response.data);
@@ -72,6 +75,7 @@ export default function AdminLayout() {
     }
 
     const fetchOrders = async () => {
+        setOrders([]);
         const response = await orderOp.getAll();
         if (response.success) {
             setOrders(response.data.map((order: any) => {
@@ -81,6 +85,7 @@ export default function AdminLayout() {
                     trackingNumber: order.trackingNumber,
                     createdAt: order.createdAt,
                     total: Number(order.totalPrice),
+                    paymentMethod: order.paymentMethod,
                     status: order.status,
                     numberOfItems: order.orderDetails.length,
                     items: order.orderDetails.map((item: any) => {
@@ -88,9 +93,9 @@ export default function AdminLayout() {
                             productId: item.product.id,
                             productName: item.product.name,
                             size: item.size,
-                            quantity: item.num,
-                            price_at_order: item.price_at_order,
-                            price: item.product.price,
+                            quantity: Number(item.num),
+                            price_at_order: Number(item.price_at_order),
+                            price: Number(item.product.price),
                         }
                     })
                 }
@@ -129,16 +134,16 @@ export default function AdminLayout() {
                 <div className="max-w-7xl mx-auto w-full">
                     <h1 className="text-2xl font-semibold text-gray-800 mb-6" > {selected} </h1>
                     {
-                        selected === 'Customers' && <CustomerPage customers={customers} />
+                        selected === 'Customers' && <CustomerPage customers={customers} onReload={fetchCustomers} />
                     }
                     {
-                        selected === 'Products' && <ProductPage products={products} />
+                        selected === 'Products' && <ProductPage products={products} onReload={fetchProducts}/>
                     }
                     {
-                        selected === 'Orders' && <OrdersPage orders={orders} />
+                        selected === 'Orders' && <OrdersPage orders={orders} onReload={fetchOrders}/>
                     }
                     {
-                        selected === 'Posts' && <PostsPage posts={posts} />
+                        selected === 'Posts' && <PostsPage posts={posts} onReload={fetchPosts}/>
                     }
                     {
                         selected === 'Dashboard' && <Dashboard customers={customers} orders={orders} posts={posts} products={products} onChangeTab={onChangeTab} />

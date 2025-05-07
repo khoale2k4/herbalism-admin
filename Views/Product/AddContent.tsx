@@ -63,13 +63,13 @@ const defaultOptions: ProductOption[] = [
     }
 ];
 
-const AddProductPopup = ({ onClose, onSubmit, initialProductId }: {
+const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
     onClose: () => void;
     onSubmit: (product: ProductFormData) => void;
+    adding: boolean;
     initialProductId?: string;
 }) => {
     const [activeTab, setActiveTab] = useState<'info' | 'images' | 'sizes' | 'tabs' | 'options'>('info');
-    const [loading, setLoading] = useState(false);
     const [product, setProduct] = useState<ProductFormData>({
         name: '',
         id: '',
@@ -79,6 +79,7 @@ const AddProductPopup = ({ onClose, onSubmit, initialProductId }: {
         tabs: [{ name: '', description: '' }],
         options: [...defaultOptions]
     });
+    const [loading, setLoading] = useState(false);
     const productOp = new ProductOperation();
     const formatType = (type: string) => {
         if (type === 'type') {
@@ -244,57 +245,62 @@ const AddProductPopup = ({ onClose, onSubmit, initialProductId }: {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
         onSubmit(product);
-        setLoading(false);
         // onClose();
     };
 
     useEffect(() => {
         const init = async () => {
-            const categoryRes: CategoryResponse = await productOp.getCategory();
+            try {
+                setLoading(true);
+                const categoryRes: CategoryResponse = await productOp.getCategory();
 
-            if (categoryRes.success) {
-                const availableOptions: ProductOption[] = [
-                    {
-                        type: 'type' as const,
-                        availableValues: categoryRes.data.types.map(t => t.name),
-                        selectedValue: '',
-                    },
-                    {
-                        type: 'form' as const,
-                        availableValues: categoryRes.data.forms.map(f => f.name),
-                        selectedValue: '',
-                    },
-                    {
-                        type: 'need' as const,
-                        availableValues: categoryRes.data.needs.map(n => n.name),
-                        selectedValue: '',
-                    },
-                ];
+                if (categoryRes.success) {
+                    const availableOptions: ProductOption[] = [
+                        {
+                            type: 'type' as const,
+                            availableValues: categoryRes.data.types.map(t => t.name),
+                            selectedValue: '',
+                        },
+                        {
+                            type: 'form' as const,
+                            availableValues: categoryRes.data.forms.map(f => f.name),
+                            selectedValue: '',
+                        },
+                        {
+                            type: 'need' as const,
+                            availableValues: categoryRes.data.needs.map(n => n.name),
+                            selectedValue: '',
+                        },
+                    ];
 
-                if (initialProductId) {
-                    const productRes = await productOp.getById(initialProductId);
-                    if (productRes.success) {
-                        const fetchedProduct = productRes.data;
+                    if (initialProductId) {
+                        const productRes = await productOp.getById(initialProductId);
+                        if (productRes.success) {
+                            const fetchedProduct = productRes.data;
 
-                        setProduct({
-                            ...fetchedProduct,
-                            options: availableOptions.map(opt => ({
-                                ...opt,
-                                selectedValue:
-                                    opt.type === 'form' ? fetchedProduct.form.name :
-                                        opt.type === 'need' ? fetchedProduct.need.name :
-                                            opt.type === 'type' ? fetchedProduct.type.name : ''
-                            }))
-                        });
+                            setProduct({
+                                ...fetchedProduct,
+                                options: availableOptions.map(opt => ({
+                                    ...opt,
+                                    selectedValue:
+                                        opt.type === 'form' ? fetchedProduct.form.name :
+                                            opt.type === 'need' ? fetchedProduct.need.name :
+                                                opt.type === 'type' ? fetchedProduct.type.name : ''
+                                }))
+                            });
+                        }
+                    } else {
+                        setProduct(prev => ({
+                            ...prev,
+                            options: availableOptions,
+                        }));
                     }
-                } else {
-                    setProduct(prev => ({
-                        ...prev,
-                        options: availableOptions,
-                    }));
                 }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -655,10 +661,10 @@ const AddProductPopup = ({ onClose, onSubmit, initialProductId }: {
                             </button>
                             {<button
                                 type="submit"
-                                disabled={loading}
-                                className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                                disabled={adding || loading}
+                                className={`px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${adding || loading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'}`}
                             >
-                                {loading ? "Đang lưu" : "Lưu sản phẩm"}
+                                {adding ? "Đang lưu" : loading ? "Đang tải" : "Lưu sản phẩm"}
                             </button>}
                         </div>
                     </form>

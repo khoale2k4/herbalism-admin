@@ -82,6 +82,45 @@ export class ArticleOperation {
         }
     }
 
+    async update(id: string, title: string, content: string, shortDescription: string, images: string[], category: string) {
+        try {
+            const articleData = {
+                title,
+                content,
+                shortDescription,
+                images,
+                category
+            };
+
+            const response = await fetch(this.baseUrl + '/' + id, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: "Bearer " + token
+                },
+                body: JSON.stringify(articleData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Create article failed with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Article created successfully:', result);
+            return {
+                success: true,
+                message: "Success",
+                data: result
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error,
+                data: null
+            };
+        }
+    }
+
     async getAll() {
         try {
             const response = await fetch(this.baseUrl, {
@@ -113,6 +152,34 @@ export class ArticleOperation {
     async getAllCategories() {
         try {
             const response = await fetch(this.baseUrl + "/categories", {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Get article failed with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            return {
+                success: true,
+                message: result.message,
+                data: result.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error,
+                data: null
+            };
+        }
+    }
+
+    async getById(id: string) {
+        try {
+            const response = await fetch(this.baseUrl + "/" + id, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -494,7 +561,6 @@ export class VoucherOperation {
         }
     }
 }
-
 
 export class MailOperation {
     private baseUrl: string;

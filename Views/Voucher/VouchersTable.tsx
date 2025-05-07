@@ -4,6 +4,7 @@ import { DataTable } from "@/components/DataTable/DataTable";
 import { useCallback, useEffect, useState } from "react";
 import VoucherEditorPopup from "./CreateVoucher";
 import { VoucherOperation } from "@/lib/main";
+import { FiRefreshCcw } from "react-icons/fi";
 
 export type Voucher = {
     id: string;
@@ -64,10 +65,38 @@ export default function VouchersPage() {
                 selectable="none"
                 onSelectionChange={(selected) => console.log("Selected posts:", selected)}
                 actions={
-                    <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                        onClick={() => setIsPopupOpen(true)}>
-                        Tạo voucher
-                    </button>
+                    // <div>
+                    //     <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                    //         onClick={() => setIsPopupOpen(true)}>
+                    //         Tạo voucher
+                    //     </button>
+                    //     <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    //         onClick={() => fetchVouchers()}>
+                    //         Tải lại
+                    //     </button>
+                    // </div>
+                    <div className="flex gap-2 mb-4">
+                        <button
+                            className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                            onClick={() => {
+                                // setSelectedArticleId(undefined);
+                                setIsPopupOpen(true);
+                            }}
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Gửi mail
+                        </button>
+
+                        <button
+                            className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                            onClick={fetchVouchers}
+                        >
+                            <FiRefreshCcw />
+                            Tải lại
+                        </button>
+                    </div>
                 }
                 onRowClick={(post) => console.log("Row clicked:", post)}
                 className="p-4 bg-white rounded-lg shadow"

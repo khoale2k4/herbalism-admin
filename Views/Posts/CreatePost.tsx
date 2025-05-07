@@ -18,9 +18,11 @@ export type ArticleFormData = {
     category: string;
 };
 
-const ArticleEditorPopup = ({ onClose, onSubmit }: {
+const ArticleEditorPopup = ({ onClose, onSubmit, adding, articleId }: {
     onClose: () => void;
     onSubmit: (article: ArticleFormData) => void;
+    adding: boolean;
+    articleId?: string;
 }) => {
     const [article, setArticle] = useState<ArticleFormData>({
         title: '',
@@ -29,6 +31,7 @@ const ArticleEditorPopup = ({ onClose, onSubmit }: {
         images: [],
         category: ''
     });
+    const [loading, setLoading] = useState(false);
     const articleOp = new ArticleOperation();
 
     const [activeTab, setActiveTab] = useState<'content' | 'title' | 'category'>('title');
@@ -86,18 +89,49 @@ const ArticleEditorPopup = ({ onClose, onSubmit }: {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSubmit(article);
-        onClose();
     };
 
-    const fetchCategories = async () => {
-        articleOp.getAllCategories().then(res => {
-            if (res.success) setCategories(res.data);
-        });
-    }
-
     useEffect(() => {
-        fetchCategories();
+        const loadData = async () => {
+            try {
+                setLoading(true);
+                if (articleId) {
+                    const response = await articleOp.getById(articleId);
+                    if (response.success) {
+                        const articleData = response.data;
+                        const trimmedImageUrl = articleData.imageUrl?.trim() ?? "";
+
+                        const categoryResponse = await articleOp.getAllCategories();
+                        if (categoryResponse.success) {
+                            const categoryList = categoryResponse.data;
+                            const matchedCategory = categoryList.find(
+                                (cate: any) => cate.id === articleData.categoryId
+                            );
+
+                            setCategories(categoryList);
+                            setArticle({
+                                ...articleData,
+                                images: [{ url: trimmedImageUrl }],
+                                category: matchedCategory.name ?? null
+                            });
+                        }
+                    }
+                } else {
+                    const categoryResponse = await articleOp.getAllCategories();
+                    if (categoryResponse.success) {
+                        setCategories(categoryResponse.data);
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
     }, []);
+
 
     return (
 
@@ -235,24 +269,26 @@ const ArticleEditorPopup = ({ onClose, onSubmit }: {
                                             required
                                         />
                                     </div>
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h3 className="text-sm font-medium text-gray-700">Hình ảnh bài viết</h3>
-                                        <button
-                                        type="button"
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-                                    >
-                                        Thêm ảnh
-                                    </button>
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            className="hidden"
-                                            multiple
-                                            accept="image/*"
-                                            onChange={handleImageUpload}
-                                        />
-                                    </div>
+                                    {article.images.length === 0 &&
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h3 className="text-sm font-medium text-gray-700">Hình ảnh bài viết</h3>
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                                            >
+                                                Thêm ảnh
+                                            </button>
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                className="hidden"
+                                                multiple
+                                                accept="image/*"
+                                                onChange={handleImageUpload}
+                                            />
+                                        </div>
+                                    }
 
                                     {article.images.length === 0 ? (
                                         <div className="text-center py-6 bg-gray-50 rounded-lg">
@@ -261,7 +297,7 @@ const ArticleEditorPopup = ({ onClose, onSubmit }: {
                                     ) : (
                                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                                             {article.images.map((image) => (
-                                                <div key={image.id} className="relative group">
+                                                <div key={image.url} className="relative group">
                                                     <img
                                                         src={image.url}
                                                         alt="Preview"
@@ -290,12 +326,13 @@ const ArticleEditorPopup = ({ onClose, onSubmit }: {
                                 >
                                     Hủy
                                 </button>
-                                <button
+                                {<button
                                     type="submit"
-                                    className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                                    disabled={adding || loading}
+                                    className={`px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${adding || loading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'}`}
                                 >
-                                    Đăng bài
-                                </button>
+                                    {adding ? "Đang lưu" : loading ? "Đang tải" : "Lưu bài"}
+                                </button>}
                             </div>
                         </form>
                     </div>

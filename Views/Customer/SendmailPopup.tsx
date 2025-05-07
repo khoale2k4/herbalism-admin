@@ -67,20 +67,28 @@ const EmailPopup = ({ onClose, onSubmit, initialEmails }: EmailPopupProps) => {
             return;
         }
 
-        if (!validateEmail(newEmail)) {
-            setErrors(prev => ({ ...prev, email: 'Email không hợp lệ' }));
-            return;
+        // Tách các email từ chuỗi nhập vào, loại bỏ khoảng trắng thừa
+        const emailList = newEmail.split(/\s+/).map(email => email.trim()).filter(Boolean);
+
+        // Kiểm tra từng email trong danh sách
+        for (let email of emailList) {
+            if (!validateEmail(email)) {
+                setErrors(prev => ({ ...prev, email: 'Email không hợp lệ' }));
+                return;
+            }
+
+            if (emails.includes(email)) {
+                setErrors(prev => ({ ...prev, email: 'Email đã tồn tại trong danh sách' }));
+                return;
+            }
         }
 
-        if (emails.includes(newEmail)) {
-            setErrors(prev => ({ ...prev, email: 'Email đã tồn tại trong danh sách' }));
-            return;
-        }
-
-        setEmails([...emails, newEmail]);
+        // Nếu tất cả email hợp lệ, thêm vào danh sách
+        setEmails([...emails, ...emailList]);
         setNewEmail('');
         setErrors(prev => ({ ...prev, email: undefined, general: undefined }));
     };
+
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
