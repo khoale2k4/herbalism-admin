@@ -20,7 +20,10 @@ export default function VouchersPage() {
 
     const handleSubmit = async (voucher: Voucher) => {
         // const resposne = await articleOp.create(finalData.title, finalData.content, articleData.shortDescription, filteredImageUrls, articleData.category);
-        const response = await voucherOp.create(voucher);
+        const response = await voucherOp.create({
+            ...voucher,
+            discount: voucher.type === 'percent' ? voucher.discount /= 100 : voucher.discount
+        });
         fetchVouchers();
     };
 
@@ -86,7 +89,7 @@ export default function VouchersPage() {
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                             </svg>
-                            Gửi mail
+                            Tạo voucher
                         </button>
 
                         <button

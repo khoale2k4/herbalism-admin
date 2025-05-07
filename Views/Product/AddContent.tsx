@@ -345,6 +345,22 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
                                 </svg>
                             </button>
                         </div>
+                        
+                        <div className="w-full bg-gray-200 rounded-full h-1.5 mb-6">
+                            <div
+                                className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
+                                style={{
+                                    width: `${(
+                                        (product.name ? 1 : 0) +
+                                        (product.id ? 1 : 0) +
+                                        (product.tabs.length > 0 ? 1 : 0) +
+                                        (product.size_stock.length > 0 ? 1 : 0) +
+                                        (product.content ? 1 : 0) +
+                                        (product.options.length > 0 ? 1 : 0)
+                                    ) * (100 / 6)}%`
+                                }}
+                            />
+                        </div>
 
                         {/* Tabs Navigation */}
                         <div className="flex border-b border-gray-200 bg-gray-50 px-6">

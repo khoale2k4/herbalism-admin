@@ -56,6 +56,12 @@ export default function OrderDetailPopup({
                 };
             case 'shipped':
                 return {
+                    color: 'bg-yellow-100 text-yellow-800',
+                    icon: <Truck size={16} className="mr-1" />,
+                    label: 'Đang được giao'
+                };
+            case 'delivered':
+                return {
                     color: 'bg-green-100 text-green-800',
                     icon: <Truck size={16} className="mr-1" />,
                     label: 'Đã giao'
@@ -74,6 +80,16 @@ export default function OrderDetailPopup({
                 };
         }
     };
+
+    const getPaymentMethods = (met: string) => {
+        if (met === 'cod') {
+            return "Thanh toán khi nhận hàng";
+        }
+        if (met === 'bank') {
+            return "Chuyển khoản";
+        }
+        return met;
+    }
 
     const statusInfo = getStatusInfo(order.status);
     const orderTotal = order.items.reduce(
@@ -188,7 +204,7 @@ export default function OrderDetailPopup({
                                                 <div className="flex items-center text-sm">
                                                     <DollarSign className="h-4 w-4 text-gray-500 mr-2" />
                                                     <span className="font-medium text-gray-500 mr-1">Phương thức thanh toán:</span>
-                                                    {order.paymentMethod || "COD"}
+                                                    {getPaymentMethods(order.paymentMethod || "COD")}
                                                 </div>
                                             </div>
                                         </div>
