@@ -106,7 +106,7 @@ export default function Dashboard({ customers, orders, products, posts, onChange
         const orderData = orders.map(o => ({
             "Mã đơn": o.trackingNumber,
             "Khách hàng": o.customerName,
-            "Trạng thái": o.status === "completed" ? "Hoàn thành" : "Đang xử lý",
+            "Trạng thái": o.status === "delivered" ? "Hoàn thành" : "Đang xử lý",
             "Ngày đặt": new Date(o.createdAt),
             "Tổng tiền": o.total,
             // "Phương thức thanh toán": o.paymentMethod || "Chuyển khoản"
@@ -525,11 +525,11 @@ export default function Dashboard({ customers, orders, products, posts, onChange
                                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{order.trackingNumber}</td>
                                     <td className="px-4 py-3 text-sm text-gray-600">{order.customerName || "Khách hàng"}</td>
                                     <td className="px-4 py-3 text-sm">
-                                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${order.status === "completed" ? "bg-green-100 text-green-800" :
+                                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${order.status === "delivered" ? "bg-green-100 text-green-800" :
                                             order.status === "pending" ? "bg-yellow-100 text-yellow-800" :
                                                 "bg-gray-100 text-gray-800"
                                             }`}>
-                                            {order.status === "completed" ? "Hoàn thành" :
+                                            {order.status === "delivered" ? "Hoàn thành" :
                                                 order.status === "pending" ? "Đang xử lý" :
                                                     "Chưa xác định"}
                                         </span>
