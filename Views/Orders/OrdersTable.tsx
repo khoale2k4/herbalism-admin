@@ -4,15 +4,16 @@ import { DataTable } from "@/components/DataTable/DataTable";
 import OrderDetailPopup from "./Details";
 import { useState } from "react";
 import { FiRefreshCcw } from "react-icons/fi";
+import { OrderOperation } from "@/lib/main";
 
 export type Order = {
-    id: number;
+    id: string;
     customerName: string;
     trackingNumber: string;
     paymentMethod: 'cod' | 'bank';
     createdAt: string;
     total: number;
-    status: "pending" | "processing" | "completed" | "cancelled";
+    status: "pending" | "processing" | 'shipped' | 'delivered' | "cancelled";
     numberOfItems: number;
     items: {
         productId: number;
@@ -26,12 +27,45 @@ export type Order = {
 
 export default function OrdersPage({ orders, onReload }: { orders: Order[], onReload: () => void }) {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [updating, setUpdating] = useState(false);
+    const orderOp = new OrderOperation();
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [notification, setNotification] = useState<{
+        type: 'success' | 'error';
+        message: string;
+    } | null>(null);
 
     const handleRowClick = (order: Order) => {
         setSelectedOrder(order);
         setIsPopupOpen(true);
     };
+
+    const handleUpdateStatus = async (orderId: string, newStatus: string) => {
+        try {
+            setUpdating(true);
+            const response = await orderOp.updateStatus(newStatus, orderId);
+            if (response.success) {
+                setNotification({
+                    type: 'success',
+                    message: "Cập nhật thành công!"
+                });
+                onReload();
+            } else {
+                setNotification({
+                    type: 'error',
+                    message: "Cập nhật không thành công"
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setUpdating(false);
+            setTimeout(() => {
+                setNotification(null);
+            }, 5000);
+            setIsPopupOpen(false);
+        }
+    }
 
     const getPaymentMethods = (met: string) => {
         if (met === 'cod') {
@@ -50,7 +84,10 @@ export default function OrdersPage({ orders, onReload }: { orders: Order[], onRe
         if (sta === 'processing') {
             return "Đang xử lý";
         }
-        if (sta === 'completed') {
+        if (sta === 'shipped') {
+            return "Đang giao";
+        }
+        if (sta === 'delivered') {
             return "Hoàn thành";
         }
         if (sta === 'cancelled') {
@@ -61,6 +98,23 @@ export default function OrdersPage({ orders, onReload }: { orders: Order[], onRe
 
     return (
         <div className="p-6">
+            {notification && (
+                <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+                    } text-white animate-fade-in-down`}>
+                    <div className="flex items-center">
+                        {notification.type === 'success' ? (
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        ) : (
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        )}
+                        <span>{notification.message}</span>
+                    </div>
+                </div>
+            )}
             <DataTable
                 columns={[
                     { title: "Khách hàng", render: (o) => o.customerName },
@@ -106,6 +160,8 @@ export default function OrdersPage({ orders, onReload }: { orders: Order[], onRe
                 order={selectedOrder}
                 isOpen={isPopupOpen}
                 onClose={() => setIsPopupOpen(false)}
+                updateOrderStatus={handleUpdateStatus}
+                updating={updating}
             />
         </div>
     );
