@@ -8,6 +8,7 @@ import { FiRefreshCcw } from "react-icons/fi";
 
 export type Product = {
     id: number;
+    slug: string;
     name: string;
     price: number;
     totalStock: number;

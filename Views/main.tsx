@@ -55,6 +55,7 @@ export default function AdminLayout() {
             setProducts(products.map((product: any) => {
                 return {
                     id: product.id,
+                    slug: product.slug,
                     name: product.name,
                     price: product.price,
                     totalStock: product.totalStock,

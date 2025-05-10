@@ -43,6 +43,7 @@ type ProductImage = {
 
 export type ProductFormData = {
     id: string;
+    slug: string;
     name: string;
     content: string;
     images: ProductImage[];
@@ -79,6 +80,7 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
     const [product, setProduct] = useState<ProductFormData>({
         name: '',
         id: '',
+        slug: '',
         content: '',
         images: [],
         size_stock: [],
@@ -408,8 +410,8 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
                                                     <input
                                                         type="text"
                                                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                                        value={product.id}
-                                                        onChange={(e) => setProduct({ ...product, id: e.target.value })}
+                                                        value={product.slug ?? ""}
+                                                        onChange={(e) => setProduct({ ...product, slug: e.target.value })}
                                                         placeholder="Nhập ID sản phẩm"
                                                         required
                                                     />
