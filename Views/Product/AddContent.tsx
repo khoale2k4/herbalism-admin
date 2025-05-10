@@ -189,7 +189,7 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
     const addSize = () => {
         setProduct(prev => ({
             ...prev,
-            sizes: [...prev.size_stock, { size: '', price: 0, stock: 0 }],
+            size_stock: [...prev.size_stock, { size: '', price: 0, stock: 0 }],
         }));
     };
 
