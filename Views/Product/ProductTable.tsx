@@ -26,6 +26,32 @@ export default function ProductPage({ products, onReload }: { products: Product[
         message: string;
     } | null>(null);
 
+    const handleDelete = async (id: string) => {
+        try {
+            const response = await productOp.delete(id);
+            if (response.success) {
+                setNotification({
+                    type: 'success',
+                    message: "Xoá thành công!"
+                });
+                onReload();
+            } else {
+                setNotification({
+                    type: 'error',
+                    message: "Xoá không thành công"
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setAdding(false);
+            setTimeout(() => {
+                setNotification(null);
+            }, 5000);
+            setIsPopupOpen(false);
+        }
+    }
+
     const handleSubmitProduct = async (productData: ProductFormData) => {
         try {
             setAdding(true);
@@ -50,7 +76,7 @@ export default function ProductPage({ products, onReload }: { products: Product[
                         if (url.success) return url.data;
                     }
 
-                    return null; 
+                    return null;
                 })
             );
             const filteredImageUrls = productImageUrls.filter(Boolean) as string[];
@@ -166,7 +192,7 @@ export default function ProductPage({ products, onReload }: { products: Product[
                     setIsPopupOpen(true);
                 })}
                 className="p-4 bg-white rounded-lg shadow"
-                onDelete={(product) => console.log('Delete product:', product)}
+                onDelete={(product) => handleDelete(product as string)}
             />
             {isPopupOpen &&
                 <AddProductPopup

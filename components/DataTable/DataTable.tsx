@@ -1,4 +1,6 @@
+import { Dialog, Transition } from '@headlessui/react';
 import { on } from 'events';
+import { Fragment } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import React, { useState, useMemo, useEffect } from 'react';
 
@@ -67,6 +69,23 @@ export function DataTable<T>({
     const [selectedRows, setSelectedRows] = useState<(string | number)[]>([]);
     const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<string | number | null>(null);
+
+    // Thêm hàm xử lý mở modal xác nhận
+    const handleDeleteClick = (itemId: string | number) => {
+        setItemToDelete(itemId);
+        setIsDeleteModalOpen(true);
+    };
+
+    // Thêm hàm xử lý xác nhận xóa
+    const confirmDelete = () => {
+        if (itemToDelete && onDelete) {
+            onDelete(itemToDelete);
+        }
+        setIsDeleteModalOpen(false);
+        setItemToDelete(null);
+    };
 
     // Reset page when data changes
     useEffect(() => {
@@ -252,6 +271,70 @@ export function DataTable<T>({
 
     return (
         <div className="w-full flex flex-col">
+            <Transition appear show={isDeleteModalOpen} as={Fragment}>
+                <Dialog
+                    as="div"
+                    className="relative z-50"
+                    onClose={() => setIsDeleteModalOpen(false)}
+                >
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-4 text-center">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                    <Dialog.Title
+                                        as="h3"
+                                        className="text-lg font-medium leading-6 text-gray-900"
+                                    >
+                                        Xác nhận xóa
+                                    </Dialog.Title>
+                                    <div className="mt-2">
+                                        <p className="text-sm text-gray-500">
+                                            Bạn có chắc chắn muốn xóa mục này? Hành động này không thể hoàn tác.
+                                        </p>
+                                    </div>
+
+                                    <div className="mt-4 flex justify-end space-x-3">
+                                        <button
+                                            type="button"
+                                            className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                            onClick={() => setIsDeleteModalOpen(false)}
+                                        >
+                                            Hủy bỏ
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="inline-flex justify-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                            onClick={confirmDelete}
+                                        >
+                                            Xác nhận xóa
+                                        </button>
+                                    </div>
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition>
             {/* Action and Search Bar */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 {actions && <div className="flex-1">{actions}</div>}
@@ -411,7 +494,7 @@ export function DataTable<T>({
                                                         className="text-red-500 hover:underline"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            onDelete(rowKeyValue);
+                                                            handleDeleteClick(rowKeyValue);
                                                         }}
                                                     >
                                                         <Trash2 size={16} />
