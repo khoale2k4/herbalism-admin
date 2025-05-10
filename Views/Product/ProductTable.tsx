@@ -30,12 +30,27 @@ export default function ProductPage({ products, onReload }: { products: Product[
         try {
             setAdding(true);
             const productImageUrls = await Promise.all(
-                productData.images.map(async (image) => {
-                    if (image.file) {
-                        const url = await productOp.uploadImage(image.file);
+                productData.images.map(async (image, index) => {
+                    let file = image.file;
+
+                    if (!file && image.url) {
+                        try {
+                            const response = await fetch(image.url);
+                            const blob = await response.blob();
+                            const filename = `image_${index}.jpg`;
+                            file = new File([blob], filename, { type: blob.type });
+                        } catch (err) {
+                            console.error(`Lỗi khi fetch ảnh từ URL: ${image.url}`, err);
+                            return null;
+                        }
+                    }
+
+                    if (file) {
+                        const url = await productOp.uploadImage(file);
                         if (url.success) return url.data;
                     }
-                    return null; // hoặc có thể lọc sau
+
+                    return null; 
                 })
             );
             const filteredImageUrls = productImageUrls.filter(Boolean) as string[];
