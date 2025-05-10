@@ -207,8 +207,8 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const name = e.target.value;
-        const id = generateSlug(name);
-        setProduct({ ...product, name, id });
+        const slug = generateSlug(name);
+        setProduct({ ...product, name, slug });
     }
 
     const updateSize = (index: number, field: keyof ProductSize, value: string | number) => {

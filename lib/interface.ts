@@ -6,8 +6,8 @@ export type ResponseForm = {
 }
 
 export type CreateProductDto = {
-    id: string;
     name: string;
+    slug: string;
     images: string[];
     content: string;
     tabs: Tab[];

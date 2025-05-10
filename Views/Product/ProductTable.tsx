@@ -43,10 +43,10 @@ export default function ProductPage({ products, onReload }: { products: Product[
             let response;
             if (selectedProductId !== null) {
                 response = await productOp.update(selectedProductId, {
-                    id: restProductData.id,
                     content: restProductData.content,
                     name: restProductData.name,
                     tabs: restProductData.tabs,
+                    slug: productData.slug,
                     images: filteredImageUrls,
                     product_form: productData.options[1].selectedValue,
                     product_type: productData.options[0].selectedValue,
@@ -57,6 +57,7 @@ export default function ProductPage({ products, onReload }: { products: Product[
                 response = await productOp.create({
                     ...restProductData,
                     images: filteredImageUrls,
+                    slug: productData.slug,
                     product_form: productData.options[1].selectedValue,
                     product_type: productData.options[0].selectedValue,
                     wellness_need: productData.options[2].selectedValue,
