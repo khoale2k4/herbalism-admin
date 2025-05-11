@@ -297,6 +297,13 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
 
                             setProduct({
                                 ...fetchedProduct,
+                                size_stock: fetchedProduct.size_stock.map((size_stock: any) => {
+                                    return {
+                                        size: size_stock.size,
+                                        stock: Number(size_stock.stock),
+                                        price: Number(size_stock.price)
+                                    }
+                                }),
                                 options: availableOptions.map(opt => ({
                                     ...opt,
                                     selectedValue:
