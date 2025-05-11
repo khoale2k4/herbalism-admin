@@ -113,6 +113,7 @@ export default function ProductPage({ products, onReload }: { products: Product[
                     message: "Cập nhật thành công!"
                 });
                 onReload();
+                setIsPopupOpen(false);
             } else {
                 setNotification({
                     type: 'error',
@@ -126,7 +127,6 @@ export default function ProductPage({ products, onReload }: { products: Product[
             setTimeout(() => {
                 setNotification(null);
             }, 5000);
-            setIsPopupOpen(false);
         }
     };
     return (
