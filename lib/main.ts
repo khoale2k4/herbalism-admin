@@ -82,6 +82,35 @@ export class ArticleOperation {
         }
     }
 
+    async delete(id: string) {
+        try {
+            const response = await fetch(this.baseUrl + '/' + id, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: "Bearer " + token
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Create article failed with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            return {
+                success: true,
+                message: result.message,
+                data: result
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error,
+                data: null
+            };
+        }
+    }
+
     async update(id: string, title: string, content: string, shortDescription: string, images: string[], category: string) {
         try {
             const articleData = {

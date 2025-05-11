@@ -92,6 +92,7 @@ export default function PostsPage({ posts, onReload }: { posts: Post[], onReload
                     type: 'success',
                     message: "Cập nhật thành công!"
                 });
+                setIsPopupOpen(false);
                 onReload();
             } else {
                 setNotification({
@@ -106,9 +107,34 @@ export default function PostsPage({ posts, onReload }: { posts: Post[], onReload
             setTimeout(() => {
                 setNotification(null);
             }, 5000);
-            setIsPopupOpen(false);
         }
     };
+
+    const handleDelete = async (id: string) => {
+        try {
+            const response = await articleOp.delete(id);
+            if (response.success) {
+                setNotification({
+                    type: 'success',
+                    message: "Xoá thành công!"
+                });
+                onReload();
+            } else {
+                setNotification({
+                    type: 'error',
+                    message: "Xoá không thành công"
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setAdding(false);
+            setTimeout(() => {
+                setNotification(null);
+            }, 5000);
+            setIsPopupOpen(false);
+        }
+    }
 
     return (
         <div className="p-6">
@@ -188,7 +214,7 @@ export default function PostsPage({ posts, onReload }: { posts: Post[], onReload
                 }}
                 className="p-4 bg-white rounded-lg shadow"
                 // onEdit={(post => console.log('Edit post:', post))}
-                onDelete={(post) => console.log('Delete post:', post)}
+                onDelete={(post) => handleDelete(post as string)}
             />
             {isPopupOpen && <ArticleEditorPopup
                 onClose={() => setIsPopupOpen(false)}
