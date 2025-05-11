@@ -96,9 +96,11 @@ export default function ProductPage({ products, onReload }: { products: Product[
                 })
             } else {
                 response = await productOp.create({
-                    ...restProductData,
-                    images: filteredImageUrls,
+                    content: restProductData.content,
+                    name: restProductData.name,
+                    tabs: restProductData.tabs,
                     slug: productData.slug,
+                    images: filteredImageUrls,
                     product_form: productData.options[1].selectedValue,
                     product_type: productData.options[0].selectedValue,
                     wellness_need: productData.options[2].selectedValue,
