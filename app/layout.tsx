@@ -2,6 +2,7 @@ import { type Metadata } from 'next'
 import './globals.css'
 import ThemeProvider from '@/providers/ThemeProvider';
 import ClientOnly from '@/components/ClientOnly/ClientOnly';
+import { NotificationProvider } from '@/providers/Notification';
 
 export const metadata: Metadata = {
   title: 'Herbalism - Admin',
@@ -25,9 +26,11 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className="min-h-screen flex flex-col">
-          <ClientOnly>
+        <ClientOnly>
+          <NotificationProvider>
             <main className="flex-1">{children}</main>
-          </ClientOnly>
+          </NotificationProvider>
+        </ClientOnly>
       </body>
     </html>
 

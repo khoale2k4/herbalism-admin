@@ -5,6 +5,7 @@ import AddProductPopup, { ProductFormData } from "./AddContent";
 import { useState } from "react";
 import { ProductOperation } from "@/lib/main";
 import { FiRefreshCcw } from "react-icons/fi";
+import { useNotification } from "@/providers/Notification";
 
 export type Product = {
     id: number;
@@ -21,22 +22,19 @@ export default function ProductPage({ products, onReload }: { products: Product[
     const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
     const [adding, setAdding] = useState(false);
     const productOp = new ProductOperation();
-    const [notification, setNotification] = useState<{
-        type: 'success' | 'error';
-        message: string;
-    } | null>(null);
+    const { showNotification } = useNotification();
 
     const handleDelete = async (id: string) => {
         try {
             const response = await productOp.delete(id);
             if (response.success) {
-                setNotification({
+                showNotification({
                     type: 'success',
                     message: "Xoá thành công!"
                 });
                 onReload();
             } else {
-                setNotification({
+                showNotification({
                     type: 'error',
                     message: "Xoá không thành công"
                 });
@@ -45,9 +43,6 @@ export default function ProductPage({ products, onReload }: { products: Product[
             console.log(error);
         } finally {
             setAdding(false);
-            setTimeout(() => {
-                setNotification(null);
-            }, 5000);
             setIsPopupOpen(false);
         }
     }
@@ -108,14 +103,14 @@ export default function ProductPage({ products, onReload }: { products: Product[
                 })
             }
             if (response.success) {
-                setNotification({
+                showNotification({
                     type: 'success',
                     message: "Cập nhật thành công!"
                 });
                 onReload();
                 setIsPopupOpen(false);
             } else {
-                setNotification({
+                showNotification({
                     type: 'error',
                     message: "Cập nhật không thành công"
                 });
@@ -124,30 +119,10 @@ export default function ProductPage({ products, onReload }: { products: Product[
             console.log(error);
         } finally {
             setAdding(false);
-            setTimeout(() => {
-                setNotification(null);
-            }, 5000);
         }
     };
     return (
         <div className="p-6">
-            {notification && (
-                <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-                    } text-white animate-fade-in-down`}>
-                    <div className="flex items-center">
-                        {notification.type === 'success' ? (
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        ) : (
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        )}
-                        <span>{notification.message}</span>
-                    </div>
-                </div>
-            )}
             <DataTable
                 columns={[
                     { title: "Tên sản phẩm", render: (p) => p.name },

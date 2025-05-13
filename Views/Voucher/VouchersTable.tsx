@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import VoucherEditorPopup from "./CreateVoucher";
 import { VoucherOperation } from "@/lib/main";
 import { FiRefreshCcw } from "react-icons/fi";
+import { useNotification } from "@/providers/Notification";
 
 export type Voucher = {
     id: string;
@@ -17,6 +18,7 @@ export default function VouchersPage() {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
     const voucherOp = new VoucherOperation();
+    const { showNotification } = useNotification();
 
     const handleSubmit = async (voucher: Voucher) => {
         // const resposne = await articleOp.create(finalData.title, finalData.content, articleData.shortDescription, filteredImageUrls, articleData.category);
@@ -24,6 +26,9 @@ export default function VouchersPage() {
             ...voucher,
             discount: voucher.type === 'percent' ? voucher.discount /= 100 : voucher.discount
         });
+        if(response.success) {
+            showNotification({ message: 'Thành công', type: 'success' })
+        }
         fetchVouchers();
     };
 
