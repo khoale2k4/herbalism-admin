@@ -13,7 +13,8 @@ import {
     X,
     Clock,
     Truck,
-    User
+    User,
+    Mail
 } from "lucide-react";
 
 export default function OrderDetailPopup({
@@ -167,13 +168,25 @@ export default function OrderDetailPopup({
                                                 </p>
                                                 {/* <p className="text-sm">
                                                     <span className="font-medium text-gray-500">Địa chỉ:</span> {order.address || "Không có"}
-                                                </p>
+                                                </p>*/}
                                                 <p className="text-sm">
                                                     <span className="font-medium text-gray-500">Điện thoại:</span> {order.phone || "Không có"}
                                                 </p>
+                                                <p className="text-sm flex items-center gap-1">
+                                                    <span className="font-medium text-gray-500 flex items-center gap-1">
+                                                        Email:
+                                                    </span>
+                                                    {order.email ? (
+                                                        <a href={`mailto:${order.email}`} className="text-blue-600 hover:underline">
+                                                            {order.email}
+                                                        </a>
+                                                    ) : (
+                                                        "Không có"
+                                                    )}
+                                                </p>
                                                 <p className="text-sm">
-                                                    <span className="font-medium text-gray-500">Email:</span> {order.email || "Không có"}
-                                                </p> */}
+                                                    <span className="font-medium text-gray-500">Note:</span> {order.note || "Không có"}
+                                                </p>
                                             </div>
                                         </div>
 

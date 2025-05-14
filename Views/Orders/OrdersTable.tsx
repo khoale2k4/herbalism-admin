@@ -11,6 +11,9 @@ export type Order = {
     customerName: string;
     trackingNumber: string;
     paymentMethod: 'cod' | 'bank';
+    phone: string;
+    note: string;
+    email: string;
     createdAt: string;
     total: number;
     status: "pending" | "processing" | 'shipped' | 'delivered' | "cancelled";
