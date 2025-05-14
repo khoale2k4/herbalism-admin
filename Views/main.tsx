@@ -17,7 +17,7 @@ const menuItems = [
     { name: "Products", icon: FiPackage },
     { name: "Orders", icon: FiShoppingCart },
     { name: "Posts", icon: FiFileText },
-    { name: "Vouchers", icon: FiGift}
+    { name: "Vouchers", icon: FiGift }
 ];
 export type TabName = (typeof menuItems)[number]["name"];
 
@@ -74,35 +74,42 @@ export default function AdminLayout() {
             setCustomers(response.data);
         }
     }
-
+    
     const fetchOrders = async () => {
         setOrders([]);
+
         const response = await orderOp.getAll();
         if (response.success) {
-            setOrders(response.data.map((order: any) => {
-                return {
-                    id: order.id,
-                    customerName: order.customer.name,
-                    trackingNumber: order.trackingNumber,
-                    createdAt: order.createdAt,
-                    total: Number(order.totalPrice),
-                    paymentMethod: order.paymentMethod,
-                    status: order.status,
-                    numberOfItems: order.orderDetails.length,
-                    items: order.orderDetails.map((item: any) => {
-                        return {
-                            productId: item.product.id,
-                            productName: item.product.name,
-                            size: item.size,
-                            quantity: Number(item.num),
-                            price_at_order: Number(item.price_at_order),
-                            price: Number(item.product.price),
-                        }
-                    })
-                }
-            }));
+            const sortedData = response.data.sort((a: any, b: any) => {
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // Descending
+            });
+
+            setOrders(
+                sortedData.map((order: any) => {
+                    return {
+                        id: order.id,
+                        customerName: order.customer.name,
+                        trackingNumber: order.trackingNumber,
+                        createdAt: order.createdAt,
+                        total: Number(order.totalPrice),
+                        paymentMethod: order.paymentMethod,
+                        status: order.status,
+                        numberOfItems: order.orderDetails.length,
+                        items: order.orderDetails.map((item: any) => {
+                            return {
+                                productId: item.product.id,
+                                productName: item.product.name,
+                                size: item.size,
+                                quantity: Number(item.num),
+                                price_at_order: Number(item.price_at_order),
+                                price: Number(item.product.price),
+                            };
+                        }),
+                    };
+                })
+            );
         }
-    }
+    };
 
     useEffect(() => {
         fetchPosts();
@@ -138,19 +145,19 @@ export default function AdminLayout() {
                         selected === 'Customers' && <CustomerPage customers={customers} onReload={fetchCustomers} />
                     }
                     {
-                        selected === 'Products' && <ProductPage products={products} onReload={fetchProducts}/>
+                        selected === 'Products' && <ProductPage products={products} onReload={fetchProducts} />
                     }
                     {
-                        selected === 'Orders' && <OrdersPage orders={orders} onReload={fetchOrders}/>
+                        selected === 'Orders' && <OrdersPage orders={orders} onReload={fetchOrders} />
                     }
                     {
-                        selected === 'Posts' && <PostsPage posts={posts} onReload={fetchPosts}/>
+                        selected === 'Posts' && <PostsPage posts={posts} onReload={fetchPosts} />
                     }
                     {
                         selected === 'Dashboard' && <Dashboard customers={customers} orders={orders} posts={posts} products={products} onChangeTab={onChangeTab} />
                     }
                     {
-                        selected === 'Vouchers' && <VouchersPage/>
+                        selected === 'Vouchers' && <VouchersPage />
                     }
                 </div>
             </main>

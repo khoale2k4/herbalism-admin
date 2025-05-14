@@ -118,6 +118,7 @@ export default function OrdersPage({ orders, onReload }: { orders: Order[], onRe
             <DataTable
                 columns={[
                     { title: "Khách hàng", render: (o) => o.customerName },
+                    { title: "Mã vận đơn", render: (o) => o.trackingNumber },
                     {
                         title: "Ngày đặt", render: (o) => {
                             const date = new Date(o.createdAt);
@@ -132,7 +133,7 @@ export default function OrdersPage({ orders, onReload }: { orders: Order[], onRe
                 ]}
                 data={orders}
                 searchable={true}
-                searchFields={["customerName", "status"]}
+                searchFields={["customerName", "status", 'trackingNumber']}
                 rowKey={(order) => order.id}
                 pagination={true}
                 actions={
