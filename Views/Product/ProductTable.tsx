@@ -128,7 +128,7 @@ export default function ProductPage({ products, onReload }: { products: Product[
                     { title: "Tên sản phẩm", render: (p) => p.name },
                     { title: "Giá", render: (p) => `${p.price.toLocaleString()}₫` },
                     { title: "Số lượng tồn", render: (p) => p.totalStock },
-                    { title: "Danh mục", render: (p) => p.category },
+                    // { title: "Danh mục", render: (p) => p.category },
                 ]}
                 data={products}
                 selectable="none"

@@ -130,6 +130,21 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
         }));
     };
 
+    const moveTabUp = (index: number) => {
+        if (index === 0) return;
+        const newTabs = [...product.tabs];
+        [newTabs[index - 1], newTabs[index]] = [newTabs[index], newTabs[index - 1]];
+        setProduct({ ...product, tabs: newTabs });
+    };
+
+    const moveTabDown = (index: number) => {
+        if (index === product.tabs.length - 1) return;
+        const newTabs = [...product.tabs];
+        [newTabs[index], newTabs[index + 1]] = [newTabs[index + 1], newTabs[index]];
+        setProduct({ ...product, tabs: newTabs });
+    };
+
+
     const addNewOptionValue = (type: 'type' | 'form' | 'need') => {
         if (!newOptionValues.value.trim()) return;
 
@@ -354,7 +369,7 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
                                 </svg>
                             </button>
                         </div>
-                        
+
                         <div className="w-full bg-gray-200 rounded-full h-1.5 mb-6">
                             <div
                                 className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
@@ -645,18 +660,37 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
                                                     </div>
 
                                                     {product.tabs.length > 1 && (
-                                                        <div className="flex justify-end">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => removeTab(index)}
-                                                                className="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200"
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                                </svg>
-                                                                Xóa tab
-                                                            </button>
+                                                        <div className="flex justify-between items-center mt-4">
+                                                            <div className="flex gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => moveTabUp(index)}
+                                                                    className="inline-flex items-center px-2 py-1 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition"
+                                                                    disabled={index === 0}
+                                                                >
+                                                                    ⬆ Lên
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => moveTabDown(index)}
+                                                                    className="inline-flex items-center px-2 py-1 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition"
+                                                                    disabled={index === product.tabs.length - 1}
+                                                                >
+                                                                    ⬇ Xuống
+                                                                </button>
+                                                            </div>
+
+                                                            {product.tabs.length > 1 && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => removeTab(index)}
+                                                                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200"
+                                                                >
+                                                                    🗑 Xóa tab
+                                                                </button>
+                                                            )}
                                                         </div>
+
                                                     )}
                                                 </div>
                                             ))}
