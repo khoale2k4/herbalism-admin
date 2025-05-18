@@ -204,9 +204,23 @@ export default function OrderDetailPopup({
                                                 </div>
                                                 <div className="flex items-center text-sm">
                                                     <DollarSign className="h-4 w-4 text-gray-500 mr-2" />
-                                                    <span className="font-medium text-gray-500 mr-1">Tổng tiền:</span>
+                                                    <span className="font-medium text-gray-500 mr-1">Sản phẩm:</span>
                                                     <span className="font-medium text-green-600">
                                                         {order.total.toLocaleString()}₫
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center text-sm">
+                                                    <DollarSign className="h-4 w-4 text-gray-500 mr-2" />
+                                                    <span className="font-medium text-gray-500 mr-1">Tiền ship:</span>
+                                                    <span className="font-medium text-green-600">
+                                                        {order.shippingFee.toLocaleString()}₫
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center text-sm">
+                                                    <DollarSign className="h-4 w-4 text-gray-500 mr-2" />
+                                                    <span className="font-medium text-gray-500 mr-1">Tổng tiền:</span>
+                                                    <span className="font-medium text-green-600">
+                                                        {(order.total + order.shippingFee).toLocaleString()}₫
                                                     </span>
                                                 </div>
                                                 {/* <div className="flex items-center text-sm">

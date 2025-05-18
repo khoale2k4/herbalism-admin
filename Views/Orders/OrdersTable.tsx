@@ -16,6 +16,7 @@ export type Order = {
     email: string;
     createdAt: string;
     total: number;
+    shippingFee: number;
     status: "pending" | "processing" | 'shipped' | 'delivered' | "cancelled";
     numberOfItems: number;
     items: {

@@ -92,6 +92,7 @@ export default function AdminLayout() {
                         trackingNumber: order.trackingNumber,
                         createdAt: order.createdAt,
                         note: order.note,
+                        shippingFee: Number(order.shippingFee),
                         email: order.email,
                         phone: order.phone,
                         total: Number(order.totalPrice),
