@@ -615,10 +615,7 @@ const ArticleEditorPopup = ({ onClose, onSubmit, adding, articleId }: {
                                     <button
                                         type="submit"
                                         disabled={adding || loading}
-                                        className={`px-5 py-2 border border-transparent text-sm font-medium rounded-md text-white shadow-sm transition-all duration-200 ${adding || loading
-                                                ? 'bg-blue-400 cursor-not-allowed'
-                                                : 'bg-blue-600 hover:bg-blue-700 hover:shadow'
-                                            }`}
+                                        className={`px-6 py-2 border border-transparent text-sm font-medium rounded-lg bg-green-600 hover:bg-green-700 text-white shadow-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-1`}
                                     >
                                         {adding ? (
                                             <span className="flex items-center">

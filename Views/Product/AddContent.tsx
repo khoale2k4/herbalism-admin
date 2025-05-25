@@ -786,19 +786,40 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
                                 Hủy
                             </button>
                             <div className="flex gap-2">
-                                <button
-                                    type={activeTab === 'options' ? 'submit' : 'button'}
-                                    onClick={activeTab === 'options' ? handleSubmit : () => {
-                                        const nextTabIndex = tabs.findIndex(tab => tab.id === activeTab) + 1;
-                                        if (nextTabIndex < tabs.length) {
+                                {activeTab !== 'options' && <button
+                                    type={'button'}
+                                    onClick={
+                                        () => {
+                                            const nextTabIndex = tabs.findIndex(tab => tab.id === activeTab) + 1;
                                             setActiveTab(tabs[nextTabIndex].id);
                                         }
-                                    }}
+                                    }
+                                    disabled={adding}
+                                    className={`px-6 py-2 border border-transparent text-sm font-medium rounded-lg 
+                                        bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-1`}
+                                >
+                                    {adding ? (
+                                        <>
+                                            <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <span>Đang lưu</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>Tiếp tục</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </>
+                                    )}
+                                </button>}
+                                <button
+                                    type={'submit'}
+                                    onClick={handleSubmit}
                                     disabled={adding || loading}
-                                    className={`px-6 py-2 border border-transparent text-sm font-medium rounded-lg ${activeTab === 'options'
-                                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                                        : 'bg-blue-600 hover:bg-blue-700 text-white'
-                                        } shadow-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-1`}
+                                    className={`px-6 py-2 border border-transparent text-sm font-medium rounded-lg bg-green-600 hover:bg-green-700 text-white shadow-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-1`}
                                 >
                                     {adding ? (
                                         <>
@@ -816,19 +837,12 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
                                             </svg>
                                             <span>Đang tải</span>
                                         </>
-                                    ) : activeTab === 'options' ? (
+                                    ) : (
                                         <>
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                             </svg>
                                             <span>Lưu sản phẩm</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span>Tiếp tục</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                            </svg>
                                         </>
                                     )}
                                 </button>
@@ -837,7 +851,7 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
                     </div>
                 </div>
             </div>
-        </ModalWrapper>
+        </ModalWrapper >
     );
 };
 
