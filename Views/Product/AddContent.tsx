@@ -10,6 +10,7 @@ type ProductSize = {
 };
 
 type ProductTab = {
+    id: string;
     name: string;
     description: string;
 };
@@ -84,7 +85,7 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
         content: '',
         images: [],
         size_stock: [],
-        tabs: [{ name: '', description: '' }],
+        tabs: [],
         options: [...defaultOptions]
     });
     const [loading, setLoading] = useState(false);
@@ -99,21 +100,17 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
         }
     }
 
-    const modules = {
-        toolbar: [
-            [{ 'header': [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }],
-            ['link'],
-            ['clean']
-        ],
-    };
+    const getModules = (index: number) => ({
+        toolbar: {
+            container: `#toolbar-${index}`,
+        },
+    });
 
     const formats = [
         'header',
         'bold', 'italic', 'underline', 'strike',
         'list',
-        'link', 'image'
+        'link',
     ];
 
     const [newOptionValues, setNewOptionValues] = useState<{ type: 'type' | 'form' | 'need', value: string }>({
@@ -130,19 +127,28 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
         }));
     };
 
-    const moveTabUp = (index: number) => {
-        if (index === 0) return;
-        const newTabs = [...product.tabs];
-        [newTabs[index - 1], newTabs[index]] = [newTabs[index], newTabs[index - 1]];
-        setProduct({ ...product, tabs: newTabs });
+    const moveTab = (fromIndex: number, toIndex: number) => {
+        if (fromIndex < 0 || toIndex < 0 || fromIndex >= product.tabs.length || toIndex >= product.tabs.length) {
+            return;
+        }
+
+        setProduct(prev => {
+            const newTabs = [...prev.tabs];
+            const [movedTab] = newTabs.splice(fromIndex, 1);
+            newTabs.splice(toIndex, 0, movedTab);
+
+            // Tạo lại ID cho các tab để đảm bảo React nhận biết được sự thay đổi
+            const tabsWithNewIds = newTabs.map((tab, idx) => ({
+                ...tab,
+                id: `tab-${idx}-${Date.now()}` // Thêm timestamp để đảm bảo unique
+            }));
+
+            return { ...prev, tabs: tabsWithNewIds };
+        });
     };
 
-    const moveTabDown = (index: number) => {
-        if (index === product.tabs.length - 1) return;
-        const newTabs = [...product.tabs];
-        [newTabs[index], newTabs[index + 1]] = [newTabs[index + 1], newTabs[index]];
-        setProduct({ ...product, tabs: newTabs });
-    };
+    const moveTabUp = (index: number) => moveTab(index, index - 1);
+    const moveTabDown = (index: number) => moveTab(index, index + 1);
 
 
     const addNewOptionValue = (type: 'type' | 'form' | 'need') => {
@@ -242,7 +248,11 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
     const addTab = () => {
         setProduct(prev => ({
             ...prev,
-            tabs: [...prev.tabs, { name: '', description: '' }],
+            tabs: [...prev.tabs, {
+                id: Math.random().toString(36).substring(2, 9),
+                name: '',
+                description: ''
+            }],
         }));
     };
 
@@ -259,6 +269,17 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
         }));
     };
 
+    const generateToolbarId = (index: number) => `toolbar-${index}`;
+
+    const sanitizeQuillContent = (html: string) => {
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+
+        temp.querySelectorAll('span.ql-ui').forEach((el) => el.remove());
+
+        return temp.innerHTML;
+    };
+
     const handleContentChange = (content: string) => {
         setProduct(prev => ({
             ...prev,
@@ -268,7 +289,12 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(product);
+        onSubmit(
+            {
+                ...product,
+                content: sanitizeQuillContent(product.content),
+            }
+        );
         // onClose();
     };
 
@@ -443,12 +469,30 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
 
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả sản phẩm</label>
-                                                <div className="border border-gray-300 rounded-lg shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+                                                <div className="max-h-[400px] overflow-y-auto border border-gray-300 rounded-lg shadow-sm">
+                                                    <div id={generateToolbarId(0)}>
+                                                        <div id={`toolbar-0`} className="mb-2">
+                                                            <select className="ql-header" defaultValue="">
+                                                                <option value="1">Tiêu đề 1</option>
+                                                                <option value="2">Tiêu đề 2</option>
+                                                                <option value="3">Tiêu đề 3</option>
+                                                                <option value="">Thường</option>
+                                                            </select>
+                                                            <button className="ql-bold" />
+                                                            <button className="ql-italic" />
+                                                            <button className="ql-underline" />
+                                                            <button className="ql-strike" />
+                                                            <button className="ql-list" value="ordered" />
+                                                            <button className="ql-link" />
+                                                            <button className="ql-clean" />
+                                                        </div>
+                                                    </div>
+
                                                     <ReactQuill
                                                         theme="snow"
                                                         value={product.content}
                                                         onChange={handleContentChange}
-                                                        modules={modules}
+                                                        modules={getModules(0)}
                                                         formats={formats}
                                                         className="h-64"
                                                         placeholder="Nhập mô tả chi tiết về sản phẩm..."
@@ -631,7 +675,7 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
 
                                         <div className="space-y-6">
                                             {product.tabs.map((tab, index) => (
-                                                <div key={index} className="p-5 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
+                                                <div key={tab.id} className="p-5 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-300">
                                                     <div className="mb-4">
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">Tên tab</label>
                                                         <input
@@ -646,12 +690,30 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
 
                                                     <div className="mb-4">
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">Nội dung</label>
-                                                        <div className="border border-gray-300 rounded-lg shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+                                                        <div className="max-h-[400px] overflow-y-auto border border-gray-300 rounded-lg shadow-sm">
+                                                            <div id={generateToolbarId(index)}>
+                                                                <div id={`toolbar-${index}`} className="mb-2">
+                                                                    <select className="ql-header" defaultValue="">
+                                                                        <option value="1">Tiêu đề 1</option>
+                                                                        <option value="2">Tiêu đề 2</option>
+                                                                        <option value="3">Tiêu đề 3</option>
+                                                                        <option value="">Thường</option>
+                                                                    </select>
+                                                                    <button className="ql-bold" />
+                                                                    <button className="ql-italic" />
+                                                                    <button className="ql-underline" />
+                                                                    <button className="ql-strike" />
+                                                                    <button className="ql-list" value="ordered" />
+                                                                    <button className="ql-link" />
+                                                                    <button className="ql-clean" />
+                                                                </div>
+                                                            </div>
+
                                                             <ReactQuill
                                                                 theme="snow"
                                                                 value={tab.description}
                                                                 onChange={(e) => updateTab(index, 'description', e)}
-                                                                modules={modules}
+                                                                modules={getModules(index)}
                                                                 formats={formats}
                                                                 className="h-64"
                                                                 placeholder="Nhập nội dung tab..."
