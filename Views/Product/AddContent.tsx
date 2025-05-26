@@ -1,6 +1,6 @@
 import ModalWrapper from '@/components/ModalWrapper/ModalWrapper';
 import { ProductOperation } from '@/lib/main';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ReactQuill from 'react-quill-new';
 
 type ProductSize = {
@@ -85,7 +85,7 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
         content: '',
         images: [],
         size_stock: [],
-        tabs: [],
+        tabs: [{ id: Math.random().toString(36).substring(2, 9), name: '', description: '' }],
         options: [...defaultOptions]
     });
     const [loading, setLoading] = useState(false);
@@ -100,18 +100,22 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
         }
     }
 
-    const getModules = (index: number) => ({
-        toolbar: {
-            container: `#toolbar-${index}`,
-        },
-    });
+    const modules = useMemo(() => ({
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link'],
+            ['clean']
+        ],
+    }), []);
 
-    const formats = [
+    const formats = useMemo(() => [
         'header',
         'bold', 'italic', 'underline', 'strike',
         'list',
-        'link',
-    ];
+        'link', 'image'
+    ], []);
 
     const [newOptionValues, setNewOptionValues] = useState<{ type: 'type' | 'form' | 'need', value: string }>({
         type: 'type',
@@ -126,7 +130,7 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
             )
         }));
     };
-
+    
     const moveTab = (fromIndex: number, toIndex: number) => {
         if (fromIndex < 0 || toIndex < 0 || fromIndex >= product.tabs.length || toIndex >= product.tabs.length) {
             return;
@@ -149,7 +153,6 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
 
     const moveTabUp = (index: number) => moveTab(index, index - 1);
     const moveTabDown = (index: number) => moveTab(index, index + 1);
-
 
     const addNewOptionValue = (type: 'type' | 'form' | 'need') => {
         if (!newOptionValues.value.trim()) return;
@@ -268,8 +271,6 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
             tabs: prev.tabs.filter((_, i) => i !== index),
         }));
     };
-
-    const generateToolbarId = (index: number) => `toolbar-${index}`;
 
     const sanitizeQuillContent = (html: string) => {
         const temp = document.createElement('div');
@@ -470,31 +471,12 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả sản phẩm</label>
                                                 <div className="max-h-[400px] overflow-y-auto border border-gray-300 rounded-lg shadow-sm">
-                                                    <div id={generateToolbarId(0)}>
-                                                        <div id={`toolbar-0`} className="mb-2">
-                                                            <select className="ql-header" defaultValue="">
-                                                                <option value="1">Tiêu đề 1</option>
-                                                                <option value="2">Tiêu đề 2</option>
-                                                                <option value="3">Tiêu đề 3</option>
-                                                                <option value="">Thường</option>
-                                                            </select>
-                                                            <button className="ql-bold" />
-                                                            <button className="ql-italic" />
-                                                            <button className="ql-underline" />
-                                                            <button className="ql-strike" />
-                                                            <button className="ql-list" value="ordered" />
-                                                            <button className="ql-link" />
-                                                            <button className="ql-clean" />
-                                                        </div>
-                                                    </div>
-
                                                     <ReactQuill
                                                         theme="snow"
                                                         value={product.content}
                                                         onChange={handleContentChange}
-                                                        modules={getModules(0)}
+                                                        modules={modules}
                                                         formats={formats}
-                                                        className="h-64"
                                                         placeholder="Nhập mô tả chi tiết về sản phẩm..."
                                                     />
                                                 </div>
@@ -691,32 +673,15 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
                                                     <div className="mb-4">
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">Nội dung</label>
                                                         <div className="max-h-[400px] overflow-y-auto border border-gray-300 rounded-lg shadow-sm">
-                                                            <div id={generateToolbarId(index)}>
-                                                                <div id={`toolbar-${index}`} className="mb-2">
-                                                                    <select className="ql-header" defaultValue="">
-                                                                        <option value="1">Tiêu đề 1</option>
-                                                                        <option value="2">Tiêu đề 2</option>
-                                                                        <option value="3">Tiêu đề 3</option>
-                                                                        <option value="">Thường</option>
-                                                                    </select>
-                                                                    <button className="ql-bold" />
-                                                                    <button className="ql-italic" />
-                                                                    <button className="ql-underline" />
-                                                                    <button className="ql-strike" />
-                                                                    <button className="ql-list" value="ordered" />
-                                                                    <button className="ql-link" />
-                                                                    <button className="ql-clean" />
-                                                                </div>
-                                                            </div>
-
                                                             <ReactQuill
+                                                                key={`quill-${tab.id}`} 
                                                                 theme="snow"
                                                                 value={tab.description}
                                                                 onChange={(e) => updateTab(index, 'description', e)}
-                                                                modules={getModules(index)}
+                                                                modules={modules}
                                                                 formats={formats}
-                                                                className="h-64"
                                                                 placeholder="Nhập nội dung tab..."
+                                                                className="quill-editor-custom" 
                                                             />
                                                         </div>
                                                     </div>

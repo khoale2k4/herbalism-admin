@@ -18,6 +18,13 @@ body {
   font-family: 'font-serif', sans-serif;
 } */
 
+.quill-editor-custom .ql-toolbar {
+	position: sticky;
+	top: 0;
+	background: white;
+	z-index: 1;
+}
+
 @layer base {
 	html {
 		/* font-family: 'Trade Gothic', sans-serif !important; */
