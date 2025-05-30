@@ -191,7 +191,7 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const newImages = Array.from(e.target.files).map(file => ({
-                id: Math.random().toString(36).substring(2, 9),
+                id:   `${Date.now()}-${file.name}`,
                 url: URL.createObjectURL(file),
                 file,
             }));
@@ -204,11 +204,17 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
     };
 
     const removeImage = (id: string) => {
-        setProduct(prev => ({
-            ...prev,
-            images: prev.images.filter(img => img.id !== id),
-        }));
-    };
+    const imageToRemove = product.images.find(img => img.id === id);
+    if (imageToRemove?.url.startsWith("blob:")) {
+        URL.revokeObjectURL(imageToRemove.url);
+    }
+
+    setProduct(prev => ({
+        ...prev,
+        images: prev.images.filter(img => img.id !== id),
+    }));
+};
+
 
     const addSize = () => {
         setProduct(prev => ({
@@ -339,6 +345,11 @@ const AddProductPopup = ({ onClose, onSubmit, adding, initialProductId }: {
 
                             setProduct({
                                 ...fetchedProduct,
+                                images: fetchedProduct.images.map((img: any) => ({
+                                    id: img.id || img.url,
+                                    url: img.url,
+                                    file: img.file ? new File([img.file], img.file.name, { type: img.file.type }) : undefined
+                                })),
                                 size_stock: fetchedProduct.size_stock.map((size_stock: any) => {
                                     return {
                                         size: size_stock.size,
