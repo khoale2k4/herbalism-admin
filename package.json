@@ -26,6 +26,7 @@
     "apexcharts": "^3.40.0",
     "autoprefixer": "10.4.14",
     "axios": "^1.6.8",
+    "date-fns": "^4.1.0",
     "deps": "^1.0.0",
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.4",
