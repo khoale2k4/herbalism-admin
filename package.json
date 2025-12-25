@@ -35,7 +35,7 @@
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.484.0",
     "moment-timezone": "^0.5.45",
-    "next": "^15.2.3",
+    "next": "15.3.8",
     "next-i18next": "^15.4.2",
     "next-intl": "^4.0.2",
     "postcss": "8.4.35",
